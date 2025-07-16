@@ -1,0 +1,7 @@
+{
+  "name": "Fishing Mapper",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
