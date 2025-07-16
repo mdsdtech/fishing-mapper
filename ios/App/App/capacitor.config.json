@@ -1,0 +1,11 @@
+{
+	"appId": "com.fishing.mapper",
+	"appName": "Fishing Mapper",
+	"webDir": "dist",
+	"packageClassList": [
+		"AppPlugin",
+		"HapticsPlugin",
+		"KeyboardPlugin",
+		"StatusBarPlugin"
+	]
+}

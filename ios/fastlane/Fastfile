@@ -1,0 +1,28 @@
+lane :ci_deploy do
+  # Automatic signing setup
+  sync_code_signing(
+    type: "appstore",
+    team_id: ENV["APPLE_TEAM_ID"]
+  )
+
+  # Build with cloud-optimized settings
+  build_app(
+    workspace: "App.xcworkspace",
+    scheme: "App",
+    configuration: "Release",
+    xcargs: {
+      :PROVISIONING_PROFILE_SPECIFIER => ENV["PROFILE_NAME"],
+      :CODE_SIGN_IDENTITY => "iPhone Distribution"
+    },
+    export_method: "app-store",
+    output_directory: "build",
+    clone_options: { shallow: true }  # Faster git operations
+  )
+
+  # TestFlight upload
+  upload_to_testflight(
+    skip_waiting_for_build_processing: true,
+    apple_id: ENV["APPLE_ID"],
+    app_identifier: ENV["APP_BUNDLE_ID"]
+  )
+end
