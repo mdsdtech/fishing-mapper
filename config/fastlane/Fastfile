@@ -14,7 +14,6 @@ lane :ci_deploy do
     scheme: "App",
     configuration: "Release",
     xcargs: {
-      :PROVISIONING_PROFILE_SPECIFIER => "Automatic",
       :CODE_SIGN_IDENTITY => "iPhone Distribution",
       :DEVELOPMENT_TEAM => ENV['APPLE_TEAM_ID']
     },
