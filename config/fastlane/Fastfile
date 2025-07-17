@@ -14,7 +14,7 @@ lane :ci_deploy do
     scheme: "App",
     configuration: "Release",
     xcargs: {
-      :PROVISIONING_PROFILE_SPECIFIER => ENV["PROFILE_NAME"],
+      #:PROVISIONING_PROFILE_SPECIFIER => ENV["PROFILE_NAME"],
       :CODE_SIGN_IDENTITY => "iPhone Distribution"
     },
     export_method: "app-store",
