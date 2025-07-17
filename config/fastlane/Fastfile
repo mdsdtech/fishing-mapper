@@ -15,8 +15,8 @@ lane :ci_deploy do
     configuration: "Release",
     xcargs: {
       :DEVELOPMENT_TEAM => ENV['APPLE_TEAM_ID'],
-      :allowProvisioningUpdates => true
     },
+    allow_provisioning_updates: true, # Allow Fastlane to manage provisioning profiles
     export_method: "app-store",
     output_directory: "build"  # Faster git operations
   )
