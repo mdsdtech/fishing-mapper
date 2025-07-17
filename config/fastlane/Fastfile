@@ -1,4 +1,17 @@
 lane :ci_deploy do
+
+  cert(
+    team_id: ENV["APPLE_TEAM_ID"],
+    output_path: "fastlane/certs"
+  )
+  
+  sigh(
+    app_identifier: ENV["APP_BUNDLE_ID"],
+    team_id: ENV["APPLE_TEAM_ID"],
+    output_path: "fastlane/profiles",
+    provisioning_name: "FishingMapperProfile",
+    provisioning_type: "app-store"
+  )
   # App Store Connect API Key for authentication
   api_key = app_store_connect_api_key(
     key_id: ENV["APPSTORE_API_KEY_ID"],
@@ -16,7 +29,6 @@ lane :ci_deploy do
     xcargs: {
       :DEVELOPMENT_TEAM => ENV['APPLE_TEAM_ID'],
     },
-    allow_provisioning_updates: true, # Allow Fastlane to manage provisioning profiles
     export_method: "app-store",
     output_directory: "build"  # Faster git operations
   )

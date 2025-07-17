@@ -36,6 +36,8 @@ jobs:
       - name: copy Fastlane Configuration
         run: |
           mkdir -p ios/fastlane
+          mkdir -p ios/fastlane/profiles
+          mkdir -p ios/fastlane/certs
           cd config
           cp -R fastlane/* ../ios/fastlane/
           cp -R Gemfile ../ios/
