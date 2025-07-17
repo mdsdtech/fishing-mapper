@@ -5,45 +5,92 @@ on: [push]
 jobs:
   build:
     runs-on: macos-latest
-    timeout-minutes: 30 # Increased timeout
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Must be 0 for full clone
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm" # Add caching for faster installs
+          cache: "npm"
 
       - name: Install Dependencies
         run: |
           npm ci
           npm run build --prod
 
-      # Fixed iOS setup with proper error handling
       - name: Setup iOS Project
         run: |
-          # Ensure iOS platform exists
           if [ ! -d "ios" ]; then
             npx cap add ios
           fi
-
-          # Force sync and update
           npx cap sync ios
           npx cap update ios
 
-          # Navigate to iOS directory
-          cd ios/App
+      # Create Fastlane directory structure
+      - name: Create Fastlane Files
+        run: |
+          mkdir -p ios/fastlane
 
-          # Initialize Podfile if missing
-          if [ ! -f "Podfile" ]; then
-            echo "Regenerating Podfile..."
-            pod init
-          fi
+          # Create Fastfile if missing
+          if [ ! -f "ios/fastlane/Fastfile" ]; then
+            cat << 'EOF' > ios/fastlane/Fastfile
+            default_platform(:ios)
+
+            platform :ios do
+              lane :ci_deploy do
+                # Automatic code signing
+                sync_code_signing(
+                  type: "appstore",
+                  team_id: ENV["APPLE_TEAM_ID"]
+                )
+                
+                # Build configuration
+                build_app(
+                  workspace: "App.xcworkspace",
+                  scheme: "App",
+                  clean: true,
+                  configuration: "Release",
+                  output_directory: "build",
+                  export_method: "app-store",
+                  xcargs: {
+                    COMPILER_INDEX_STORE_ENABLE: "NO"
+                  }
+                )
+                
+                # TestFlight upload
+                upload_to_testflight(
+                  skip_waiting_for_build_processing: true,
+                  apple_id: ENV["APPLE_ID"],
+                  app_identifier: ENV["APP_BUNDLE_ID"]
+                )
+              end
+            end
+            EOF
+                      fi
+                      
+                      # Create Appfile if missing
+                      if [ ! -f "ios/fastlane/Appfile" ]; then
+                        cat << EOF > ios/fastlane/Appfile
+            apple_id("${{ secrets.APPLE_ID }}")
+            team_id("${{ secrets.APPLE_TEAM_ID }}")
+            app_identifier("${{ secrets.APP_BUNDLE_ID }}")
+            EOF
+                      fi
+                      
+                      # Create Gemfile if missing
+                      if [ ! -f "ios/Gemfile" ]; then
+                        cat << 'EOF' > ios/Gemfile
+            source "https://rubygems.org"
+            gem "fastlane"
+            gem "cocoapods"
+            EOF
+                      fi
 
       - name: Install CocoaPods
         run: |
@@ -55,11 +102,14 @@ jobs:
           cd ios/App
           pod install --repo-update
 
-      - name: Setup Fastlane
+      - name: Setup Fastlane Environment
         run: |
           cd ios
           sudo gem install bundler
           bundle install
+
+          # Configure CI mode
+          bundle exec fastlane run configure_ci
 
       - name: Run Fastlane Deployment
         env:
@@ -67,6 +117,8 @@ jobs:
           APP_BUNDLE_ID: ${{ secrets.APP_BUNDLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           FASTLANE_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          FASTLANE_SKIP_UPDATE_CHECK: "true"
+          FASTLANE_HIDE_CHANGELOG: "true"
         run: |
-          cd fastlane
+          cd ios
           bundle exec fastlane ci_deploy
