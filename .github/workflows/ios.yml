@@ -5,41 +5,60 @@ on: [push]
 jobs:
   build:
     runs-on: macos-latest
-    timeout-minutes: 25
+    timeout-minutes: 30  # Increased timeout
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1 # Shallow clone for speed
+          fetch-depth: 0  # Must be 0 for full clone
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: 'npm'  # Add caching for faster installs
 
       - name: Install Dependencies
         run: |
           npm ci
           npm run build --prod
 
+      # Fixed iOS setup with proper error handling
       - name: Setup iOS Project
         run: |
-          npx cap add ios
+          # Ensure iOS platform exists
+          if [ ! -d "ios" ]; then
+            npx cap add ios
+          fi
+          
+          # Force sync and update
           npx cap sync ios
+          npx cap update ios
+          
+          # Navigate to iOS directory
           cd ios/App
-          pod install --repo-update
+          
+          # Initialize Podfile if missing
+          if [ ! -f "Podfile" ]; then
+            echo "Regenerating Podfile..."
+            pod init
+          fi
 
       - name: Install CocoaPods
         run: |
-          cd ios/App
           sudo gem install cocoapods
           pod setup
+
+      - name: Install Pod Dependencies
+        run: |
+          cd ios/App
+          pod install --repo-update
 
       - name: Setup Fastlane
         run: |
           cd ios
-          gem install bundler
+          sudo gem install bundler
           bundle install
 
       - name: Run Fastlane Deployment
