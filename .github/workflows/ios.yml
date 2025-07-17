@@ -32,7 +32,7 @@ jobs:
           npx cap sync ios
           npx cap update ios
 
-      # Create Fastlane directory structure
+      # Create Fastlane directory structures
       - name: copy Fastlane Configuration and Scripts
         run: |
           mkdir -p ios/fastlane
