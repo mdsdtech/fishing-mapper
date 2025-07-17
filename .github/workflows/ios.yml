@@ -78,6 +78,7 @@ jobs:
           MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_SSH_KEY: ${{ secrets.MATCH_SSH_KEY }}
+          PROFILE_NAME: ${{ secrets.PROFILE_NAME }}
         run: |
           cd ios
           bundle exec fastlane ci_deploy
