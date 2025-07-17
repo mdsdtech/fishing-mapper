@@ -18,8 +18,7 @@ lane :ci_deploy do
       :CODE_SIGN_IDENTITY => "iPhone Distribution"
     },
     export_method: "app-store",
-    output_directory: "build",
-    clone_options: { shallow: true }  # Faster git operations
+    output_directory: "build"  # Faster git operations
   )
 
   # TestFlight upload with App Store Connect API Key
