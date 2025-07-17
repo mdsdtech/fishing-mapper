@@ -33,64 +33,11 @@ jobs:
           npx cap update ios
 
       # Create Fastlane directory structure
-      - name: Create Fastlane Files
+      - name: copy Fastlane Configuration and Scripts
         run: |
-          mkdir -p ios/fastlane
-
-          # Create Fastfile if missing
-          if [ ! -f "ios/fastlane/Fastfile" ]; then
-            cat << 'EOF' > ios/fastlane/Fastfile
-            default_platform(:ios)
-
-            platform :ios do
-              lane :ci_deploy do
-                # Automatic code signing
-                sync_code_signing(
-                  type: "appstore",
-                  team_id: ENV["APPLE_TEAM_ID"]
-                )
-                
-                # Build configuration
-                build_app(
-                  workspace: "App.xcworkspace",
-                  scheme: "App",
-                  clean: true,
-                  configuration: "Release",
-                  output_directory: "build",
-                  export_method: "app-store",
-                  xcargs: {
-                    COMPILER_INDEX_STORE_ENABLE: "NO"
-                  }
-                )
-                
-                # TestFlight upload
-                upload_to_testflight(
-                  skip_waiting_for_build_processing: true,
-                  apple_id: ENV["APPLE_ID"],
-                  app_identifier: ENV["APP_BUNDLE_ID"]
-                )
-              end
-            end
-            EOF
-                      fi
-                      
-                      # Create Appfile if missing
-                      if [ ! -f "ios/fastlane/Appfile" ]; then
-                        cat << EOF > ios/fastlane/Appfile
-            apple_id("${{ secrets.APPLE_ID }}")
-            team_id("${{ secrets.APPLE_TEAM_ID }}")
-            app_identifier("${{ secrets.APP_BUNDLE_ID }}")
-            EOF
-                      fi
-                      
-                      # Create Gemfile if missing
-                      if [ ! -f "ios/Gemfile" ]; then
-                        cat << 'EOF' > ios/Gemfile
-            source "https://rubygems.org"
-            gem "fastlane"
-            gem "cocoapods"
-            EOF
-                      fi
+          cd config
+          cp -R fastlane/* ../ios/fastlane/
+          cp -R Gemfile ../ios/
 
       - name: Install CocoaPods
         run: |
