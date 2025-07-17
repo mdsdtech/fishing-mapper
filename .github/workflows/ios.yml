@@ -42,7 +42,7 @@ jobs:
 
       - name: Create auth key
         env:
-          APP_STORE_API_KEY_ID: ${{ secrets.APP_STORE_API_KEY_ID }}
+          APP_STORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
         run: |
           cd ios/fastlane
           touch AuthKey_$APP_STORE_API_KEY_ID.p8
