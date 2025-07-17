@@ -1,5 +1,5 @@
 {
-	"appId": "com.fishing.mapper",
+	"appId": "com.testing.fishing.mapper",
 	"appName": "Fishing Mapper",
 	"webDir": "dist",
 	"packageClassList": [
