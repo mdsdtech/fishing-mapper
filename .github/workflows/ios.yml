@@ -25,6 +25,7 @@ jobs:
 
       - name: Setup iOS Project
         run: |
+          npx cap add ios
           npx cap sync ios
           cd ios/App
           pod install --repo-update
