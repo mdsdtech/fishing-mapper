@@ -56,9 +56,6 @@ jobs:
           sudo gem install bundler
           bundle install
 
-          # Configure CI mode
-          bundle exec fastlane run configure_ci
-
       - name: Run Fastlane Deployment
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
