@@ -35,6 +35,7 @@ jobs:
       # Create Fastlane directory structure
       - name: copy Fastlane Configuration and Scripts
         run: |
+          mkdir -p ios/fastlane
           cd config
           cp -R fastlane/* ../ios/fastlane/
           cp -R Gemfile ../ios/
