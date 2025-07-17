@@ -1,4 +1,5 @@
 lane :ci_deploy do
+  matchAppStore
   # App Store Connect API Key for authentication
   api_key = app_store_connect_api_key(
     key_id: ENV["APPSTORE_API_KEY_ID"],
@@ -8,22 +9,10 @@ lane :ci_deploy do
     in_house: false
   )
 
-  match(
-    type: "appstore",
-    api_key: api_key,
-    team_id: ENV["APPLE_TEAM_ID"]
-  )
-
   # Build with cloud-optimized settings
   build_app(
     workspace: "App/App.xcworkspace",
     scheme: "App",
-    configuration: "Release",
-    xcargs: {
-      #:PROVISIONING_PROFILE_SPECIFIER => ENV["PROFILE_NAME"],
-      :CODE_SIGN_IDENTITY => "iPhone Distribution",
-      :DEVELOPMENT_TEAM => ENV['APPLE_TEAM_ID']
-    },
     export_method: "app-store",
     output_directory: "build"  # Faster git operations
   )
