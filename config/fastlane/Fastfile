@@ -10,7 +10,7 @@ lane :ci_deploy do
 
   # Build with cloud-optimized settings
   build_app(
-    workspace: "App.xcworkspace",
+    workspace: "App/App.xcworkspace",
     scheme: "App",
     configuration: "Release",
     xcargs: {
