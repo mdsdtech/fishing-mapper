@@ -8,6 +8,12 @@ lane :ci_deploy do
     in_house: false
   )
 
+  match(
+    type: "appstore",
+    api_key: api_key,
+    team_id: ENV["APPLE_TEAM_ID"]
+  )
+
   # Build with cloud-optimized settings
   build_app(
     workspace: "App/App.xcworkspace",
