@@ -5,19 +5,19 @@ on: [push]
 jobs:
   build:
     runs-on: macos-latest
-    timeout-minutes: 30  # Increased timeout
+    timeout-minutes: 30 # Increased timeout
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Must be 0 for full clone
+          fetch-depth: 0 # Must be 0 for full clone
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: 'npm'  # Add caching for faster installs
+          cache: "npm" # Add caching for faster installs
 
       - name: Install Dependencies
         run: |
@@ -31,14 +31,14 @@ jobs:
           if [ ! -d "ios" ]; then
             npx cap add ios
           fi
-          
+
           # Force sync and update
           npx cap sync ios
           npx cap update ios
-          
+
           # Navigate to iOS directory
           cd ios/App
-          
+
           # Initialize Podfile if missing
           if [ ! -f "Podfile" ]; then
             echo "Regenerating Podfile..."
@@ -68,5 +68,5 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           FASTLANE_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
         run: |
-          cd ios
+          cd fastlane
           bundle exec fastlane ci_deploy
