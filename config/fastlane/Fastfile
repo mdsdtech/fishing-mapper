@@ -14,7 +14,8 @@ lane :ci_deploy do
     scheme: "App",
     configuration: "Release",
     xcargs: {
-      :DEVELOPMENT_TEAM => ENV['APPLE_TEAM_ID']
+      :DEVELOPMENT_TEAM => ENV['APPLE_TEAM_ID'],
+      :allowProvisioningUpdates => true
     },
     export_method: "app-store",
     output_directory: "build"  # Faster git operations
